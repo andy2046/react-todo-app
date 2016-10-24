@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { render } from 'react-dom';
+import 'whatwg-fetch';
 
 // Main (stateful) component.
 // Renders a SearchBar and a ContactList

@@ -7,7 +7,7 @@
   "scripts": {
     "start": "webpack-dev-server --progress",
     "build": "node_modules/.bin/webpack -p --define process.env.NODE_ENV='production' --progress --colors",
-	"build2": "node_modules/.bin/webpack -p --progress --colors"
+    "build2": "node_modules/.bin/webpack -p --progress --colors"
   },
   "devDependencies": {
     "babel-core": "~6.7.*",
@@ -18,7 +18,14 @@
     "webpack-dev-server": "~1.14.*"
   },
   "dependencies": {
+    "history": "^1.13.0",
     "react": "^15.0.0",
-    "react-dom": "^15.0.0"
+    "react-addons-css-transition-group": "^15.0.0",
+    "react-addons-transition-group": "^15.0.0",
+    "react-dnd": "^2.1.4",
+    "react-dnd-html5-backend": "^2.1.2",
+    "react-dom": "^15.0.0",
+    "react-router": "^1.0.0",
+    "whatwg-fetch": "^1.0.0"
   }
 }

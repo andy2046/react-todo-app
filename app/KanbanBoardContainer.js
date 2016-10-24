@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import KanbanBoard from './KanbanBoard';
+import {throttle} from './utils';
+import 'whatwg-fetch';
 
 class KanbanBoardContainer extends Component {
 	constructor(){
@@ -11,6 +13,10 @@ class KanbanBoardContainer extends Component {
 		this.deleteTask = this.deleteTask.bind(this);
 		this.addTask = this.addTask.bind(this);
 		
+		// Only call updateCardStatus when arguments change
+		this.updateCardStatus = throttle(this.updateCardStatus.bind(this));
+		// Call updateCardPosition at max every 500ms (or when arguments change)
+		this.updateCardPosition = throttle(this.updateCardPosition.bind(this),500);
 	}
 	
 	componentDidMount(){
@@ -78,12 +84,82 @@ class KanbanBoardContainer extends Component {
 		//console.log(this.state.cards);
 	}
 	
+	updateCardStatus(cardId, listId){
+		// Find the index of the card
+		let nextState = this.state.cards.concat([]);
+		let cardIndex = nextState.findIndex((card)=>card.id == cardId);
+		// Get the current card
+		let card = nextState[cardIndex];
+		// Only proceed if hovering over a different list
+		if(card.status !== listId){
+			// set the component state to the mutated object
+			nextState[cardIndex].status = listId;
+			this.setState({cards:nextState});
+		}
+	}
+	
+	updateCardPosition (cardId , afterId) {
+		// Only proceed if hovering over a different card
+		if(cardId !== afterId) {
+			// Find the index of the card
+			let nextState = this.state.cards.concat([]);
+			let cardIndex = nextState.findIndex((card)=>card.id == cardId);
+			// Get the current card
+			let card = nextState[cardIndex];
+			// Find the index of the card the user is hovering over
+			let afterIndex = nextState.findIndex((card)=>card.id == afterId);
+			// Use splice to remove the card and reinsert it a the new index
+			nextState.splice(cardIndex, 1);
+			nextState.splice(afterIndex, 0, card);
+			this.setState({cards:nextState});
+		}
+	}
+	
+	addCard(card){
+		// Keep a reference to the original state prior to the mutations
+		// in case we need to revert the optimistic changes in the UI
+		let prevState = this.state;
+		// Add a temporary ID to the card
+		if(card.id===null){
+			let card = Object.assign({}, card, {id:Date.now()});
+		}
+		// Create a new object and push the new card to the array of cards
+		let nextState = this.state.cards.concat([]);
+		nextState.push(card);
+		// set the component state to the mutated object
+		this.setState({cards:nextState});
+
+	}
+	
+	updateCard(card){
+		// Keep a reference to the original state prior to the mutations
+		// in case we need to revert the optimistic changes in the UI
+		let prevState = this.state;
+		// Find the index of the card
+		let nextState = this.state.cards.concat([]);
+		let cardIndex = nextState.findIndex((c)=>c.id == card.id);
+		// we will change the whole card
+		nextState[cardIndex] = card;
+		// set the component state to the mutated object
+		this.setState({cards:nextState});
+	}
+	
 	render() {
-		return <KanbanBoard cards={this.state.cards} 
-		taskCallbacks={ {
-			toggle: this.toggleTask,
-			delete: this.deleteTask,
-			add: this.addTask } } />
+		let kanbanBoard = this.props.children && React.cloneElement(this.props.children, {
+			cards: this.state.cards,
+			taskCallbacks:{
+				toggle: this.toggleTask.bind(this),
+				delete: this.deleteTask.bind(this),
+				add: this.addTask.bind(this)
+			},
+			cardCallbacks:{
+				addCard: this.addCard.bind(this),
+				updateCard: this.updateCard.bind(this),
+				updateStatus: this.updateCardStatus.bind(this),
+				updatePosition: throttle(this.updateCardPosition.bind(this),500),
+			}
+			});
+		return kanbanBoard;
 	}
 
 }
