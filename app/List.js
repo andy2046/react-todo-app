@@ -29,7 +29,9 @@ tasks={card.tasks} />
 });
 return connectDropTarget(
 <div className="list">
-<h1>{this.props.title}</h1>
+<div className="div1">
+<h1>{this.props.title}</h1> <h4>{this.props.cards.length} PROJECTS</h4>
+</div>
 {cards}
 </div>
 );

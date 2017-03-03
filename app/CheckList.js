@@ -14,14 +14,12 @@ class CheckList extends Component {
 	}
 	
 render() {
-	let tasks = this.props.tasks.map((task,taskIndex) => (
-		<li key={task.id} className="checklist__task">
+	let tasks = this.props.tasks.map((task,taskIndex) => ( <li key={task.id} className="checklist__task">
 		<input type="checkbox" checked={task.done} onChange={ 
 			this.props.taskCallbacks.toggle.bind(null, this.props.cardId, task.id, taskIndex)}  />
-		{task.name}{' '}
+		{!task.done && ' '+task.name} {task.done && <s>{task.name}</s>} {' '}
 		<a href="#" className="checklist__task--remove" onClick={ () => this.props.taskCallbacks.delete(this.props.cardId, task.id, taskIndex) } />
-		</li>
-	));
+		</li> ) );
 
 	return (
 		<div className="checklist">

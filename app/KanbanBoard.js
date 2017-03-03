@@ -13,6 +13,9 @@ render(){
 
 return (
 <div className="app">
+<div className="div2">
+<h4>TOTAL {this.props.cards.length} PROJECTS</h4>
+</div>
 <Link to='/new' className="float-button">+</Link>
 <List id='todo' title="To Do" taskCallbacks={this.props.taskCallbacks} cardCallbacks={this.props.cardCallbacks} cards={
 this.props.cards.filter((card) => card.status === "todo")
